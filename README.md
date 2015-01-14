@@ -25,24 +25,28 @@ public key of the user.
     (JS) Actor.openRequest ->
     (JS) Actor.openConversation ->
     (POST) /actors ->
-    ... -> 
-    (JS) Actor.listen ->
-    (WS) /actors/:id/listen (if populating on user computer: --> callback (JS) Slide.populateFields) .. -> 
-    (JS) Conversation.request ->
-    (POST) /conversations/:id/request_content ->
-    (Ruby) NotificationJob.perform ->
-    (Ruby) (currently) APN.push (future addition) Device.push
+      .. ->
+      (JS) Actor.listen ->
+      (WS) /actors/:id/listen
+      (if populating on user computer: --> callback (JS) Slide.populateFields)
+      .. ->
+      (JS) Conversation.request ->
+      (POST) /conversations/:id/request_content ->
+      (Ruby) NotificationJob.perform ->
+      (Ruby) (currently) APN.push (future addition) Device.push
 
 ###Response to device push:
 
     (iOS) AppDelegate#application:didReceiveRemoteNotification: ->
-    (Notification) notification .. Notification callback added in RequestsViewController#viewDidLoad .. --> 
+    (Notification) notification .. Notification callback added in RequestsViewController#viewDidLoad .. -->
     RequestsViewController#getData: ->
     wait for user to initiate request
+
     (Android) (GCM) ->
     GcmIntentService.onHandleIntent ->
     (Intent) REQUEST_INTENT -->
-    (BroadcastReceiver) RequestsFragment.recv.onReceive; then wait for user to initiate request
+    (BroadcastReceiver) RequestsFragment.recv.onReceive ->
+    wait for user to initiate request
 
 ###User pushing details to QR-coded actor:
 
@@ -50,26 +54,31 @@ public key of the user.
     QRReaderViewController ->
     QRReaderViewController#queryBackend ->
     QRReaderViewController#showForm ->
-    RequestsViewController#addRequest: ; then wait for user to initiate request
+    RequestsViewController#addRequest: ->
+    wait for user to initiate request
+
     (Android) (QR) ->
     QRFragment ->
     QRFragment.onActivityResult ->
     (Intent) REQUEST_INTENT -->
-    (BroadcastReceiver) RequestsFragment.recv.onReceive; then wait for user to initiate request
+    (BroadcastReceiver) RequestsFragment.recv.onReceive ->
+    wait for user to initiate request
 
 ###User sending or updating details on phone:
 
     (iOS) RequestViewController ->
     RequestViewController#confirm ->
     API#postPayload:forConversation:onSuccess: ->
-    (PUT) /conversations/:id ->
-    (backend) (Android) RequestActivity ->
+    (PUT) /conversations/:id
+
+    (Android) RequestActivity ->
     RequestActivity.initializeSubmit ->
     API.postData ->
     API.postBooleanValue to getConversationPath(request.conversationId) ->
-    (PUT) /conversations/:id ->
-    (backend)
-    (backend) Conversation.upstream! ->
+    (PUT) /conversations/:id
+
+    (backend) (PUT) /conversations/:id ->
+    Conversation.upstream! ->
     Actor.stream ->
     Actor.notify ->
     (WS) /actors/:id/listen
