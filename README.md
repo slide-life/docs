@@ -9,25 +9,29 @@ Cryptography has now been revamped to use AES-CBC, because it is more standard a
 ## Flows
 
 -> is a direct call
+
 --> is a callback, intent, or response to WS
 
-Requesting details:
-(JS) Actor.openRequest -> (JS) Actor.openConversation -> (POST) /actors -> ...
-.. -> (JS) Actor.listen -> (WS) /actors/:id/listen (if populating on user computer: --> callback (JS) Slide.populateFields)
-.. -> (JS) Conversation.request -> (POST) /conversations/:id/request_content -> (Ruby) NotificationJob.perform -> (Ruby) (currently) APN.push (future addition) Device.push
+###Requesting details:
 
-Response to device push:
-(iOS) AppDelegate#application:didReceiveRemoteNotification: -> (Notification) notification
-.. Notification callback added in RequestsViewController#viewDidLoad
-.. --> RequestsViewController#getData: -> wait for user to initiate request
-(Android) (GCM) -> GcmIntentService.onHandleIntent -> (Intent) REQUEST_INTENT --> (BroadcastReceiver) RequestsFragment.recv.onReceive ; then wait for user to initiate request
+    (JS) Actor.openRequest -> (JS) Actor.openConversation -> (POST) /actors -> ...
+    .. -> (JS) Actor.listen -> (WS) /actors/:id/listen (if populating on user computer: --> callback (JS) Slide.populateFields)
+    .. -> (JS) Conversation.request -> (POST) /conversations/:id/request_content -> (Ruby) NotificationJob.perform -> (Ruby) (currently) APN.push (future addition) Device.push
 
-User pushing details to QR-coded actor:
-(iOS) (QR) -> QRReaderViewController -> QRReaderViewController#queryBackend -> QRReaderViewController#showForm -> RequestsViewController#addRequest: ; then wait for user to initiate request
-(Android) (QR) -> QRFragment -> QRFragment.onActivityResult -> (Intent) REQUEST_INTENT --> (BroadcastReceiver) RequestsFragment.recv.onReceive ; then wait for user to initiate request
+###Response to device push:
 
-User sending or updating details on phone:
-(iOS) RequestViewController -> RequestViewController#confirm -> API#postPayload:forConversation:onSuccess: -> (PUT) /conversations/:id -> (backend)
-(Android) RequestActivity -> RequestActivity.initializeSubmit -> API.postData -> API.postBooleanValue to getConversationPath(request.conversationId) -> (PUT) /conversations/:id -> (backend)
-(backend) Conversation.upstream! -> Actor.stream -> Actor.notify -> (WS) /actors/:id/listen
+    (iOS) AppDelegate#application:didReceiveRemoteNotification: -> (Notification) notification
+    .. Notification callback added in RequestsViewController#viewDidLoad
+    .. --> RequestsViewController#getData: -> wait for user to initiate request
+    (Android) (GCM) -> GcmIntentService.onHandleIntent -> (Intent) REQUEST_INTENT --> (BroadcastReceiver) RequestsFragment.recv.onReceive ; then wait for user to initiate request
 
+###User pushing details to QR-coded actor:
+
+    (iOS) (QR) -> QRReaderViewController -> QRReaderViewController#queryBackend -> QRReaderViewController#showForm -> RequestsViewController#addRequest: ; then wait for user to initiate request
+    (Android) (QR) -> QRFragment -> QRFragment.onActivityResult -> (Intent) REQUEST_INTENT --> (BroadcastReceiver) RequestsFragment.recv.onReceive ; then wait for user to initiate request
+
+###User sending or updating details on phone:
+
+    (iOS) RequestViewController -> RequestViewController#confirm -> API#postPayload:forConversation:onSuccess: -> (PUT) /conversations/:id -> (backend)
+    (Android) RequestActivity -> RequestActivity.initializeSubmit -> API.postData -> API.postBooleanValue to getConversationPath(request.conversationId) -> (PUT) /conversations/:id -> (backend)
+    (backend) Conversation.upstream! -> Actor.stream -> Actor.notify -> (WS) /actors/:id/listen
