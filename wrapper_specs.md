@@ -30,11 +30,12 @@ Vendor
 Relationship
 ------------
 1. #_fromObject(obj),
-2. #get(relationshipId),
-3. .decrypt(data), .encrypt(data),
-4. .getListeners(), .addListener(listenerParams), .listenWebSocket(onMessage),
+2. #create(obj),
+3. #get(relationshipId),
+4. .decrypt(data), .encrypt(data),
+5. .getListeners(), .addListener(listenerParams), .listenWebSocket(onMessage),
 	-- listenerParams instead of just a listener, because listener belongs_to relationship.
-5. .getConversations(), .createConversation(description, form) -- form optional
+6. .getConversations(), .createConversation(description), .createConversationFromForm(description, form) -- form optional
 
 Conversation
 ------------
