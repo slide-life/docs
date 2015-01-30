@@ -2,7 +2,7 @@ API wrapper specs
 
 Actor
 -----
-1.  #_fromObject(obj),
+1.  #fromObject(obj), .toObject(),
 2.  #registerUser(identifier, password), -- registers the user as well as creating it
 3.  #registerActor(), -- registers a new actor-user without an identifier or password for temp use, doesn’t use LocalStorage
 4.  #get(identifier), -- loads public attributes of other user
@@ -29,7 +29,7 @@ Vendor
 
 Relationship
 ------------
-1. #_fromObject(obj),
+1. #fromObject(obj), .toObject(),
 2. #create(obj),
 3. #get(relationshipId),
 4. .decrypt(data), .encrypt(data),
@@ -39,7 +39,7 @@ Relationship
 
 Conversation
 ------------
-1. #_fromObject(obj),
+1. #fromObject(obj), .toObject(),
 2. #get(conversationId),
 3. ._encryptAndSendMessage(kind, plainFields),
 4. ._sendMessage(kind, fields),
